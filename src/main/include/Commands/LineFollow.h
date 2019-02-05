@@ -17,5 +17,4 @@ class LineFollow : public frc::Command {
   bool IsFinished() override;
   void End() override;
   void Interrupted() override;
-  bool Report();
 };

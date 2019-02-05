@@ -9,7 +9,6 @@
 
 #include <frc/Commands/Scheduler.h>
 #include <frc/SmartDashboard/SmartDashboard.h>
-#include "Commands/LineFollow.h"
 
 DriveSystem Robot::driveSystem;
 OI Robot::oi;
@@ -85,7 +84,6 @@ void Robot::TeleopInit() {
 
 void Robot::TeleopPeriodic() {
 	frc::Scheduler::GetInstance()->Run();
-	frc::SmartDashboard::PutBoolean("LineReportTrue",((LineFollow*) oi.lineFollow)->Report());
 }
 
 void Robot::TestPeriodic() {}
