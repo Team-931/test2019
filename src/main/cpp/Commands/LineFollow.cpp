@@ -21,6 +21,10 @@ struct LineReport : frc::Command {
   int inputAge;
   bool following;
 
+  LineReport() : frc::Command ("report on lines to follow") {
+    SetRunWhenDisabled(true);
+  }
+
   void Execute() override {
     if(readPhoto(photoleft)) 
       if(readPhoto(photoright)) {
@@ -38,10 +42,12 @@ struct LineReport : frc::Command {
       }
       else {
         if(input != None) following = true;
+        frc::SmartDashboard::PutBoolean("LineReportTrue", false);
         ++inputAge; return;
       }
     inputAge = 0;
     	frc::SmartDashboard::PutBoolean("LineReportTrue", true);
+      frc::SmartDashboard::PutNumber("Line Status", input);
   }
 
   bool IsFinished() override {return false;}
@@ -58,7 +64,7 @@ LineFollow::LineFollow() : frc::Command("Follow line"){
   Requires (& Robot::driveSystem);
   lineReport.Start();
 }
-static constexpr int ageMax = 5;
+static constexpr int ageMax = 2;
 
 // Called just before this Command runs the first time
 void LineFollow::Initialize() {
@@ -70,16 +76,16 @@ void forward (double speed) {
 }
 
 void left (double speed) {
-  Robot::driveSystem->TankDrive (0, speed, false);
+  Robot::driveSystem->TankDrive (speed/4, speed*3/4, false);
 }
 
 void right (double speed) {
-  Robot::driveSystem->TankDrive (speed, 0, false);
+  Robot::driveSystem->TankDrive (speed*3/4, speed/4, false);
 }
 
 // Called repeatedly when this Command is scheduled to run
 void LineFollow::Execute() {
-  double speed=.2;
+  double speed=.4;
   double joystickreading=-Robot::oi.stick->GetRawAxis(3);
   if(std::abs(joystickreading)>.1)speed=joystickreading;
   switch (lineReport.input) {
@@ -89,7 +95,7 @@ void LineFollow::Execute() {
     case Right: if (lineReport.following) right(speed);
                 else forward (speed);
                 return;
-    case None:  Initialize();
+    case None:  Initialize();//TODO deal with lost line
 
     case Both:  forward(speed);
   }
